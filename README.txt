@@ -1,8 +1,7 @@
 ENDER YUNUS
-2004101303
 	
-CMPE 300- PROGAMMING PROJECT
-?	Introduction 
+ PARALLEL PROGAMMING PROJECT
+Introduction 
  In this project I wrote a program which creates input strings and checks if they are accepted by DFAs which are kept  in files. Then the program creates an output file of the results. 
  The aim of the project is using parallel algorithms. 
 
@@ -20,23 +19,23 @@ q1 b q1..
 
 User Input On Command Line :
 
- > mpiexec ñn P program.exe ML A.dfa B.dfa C.dfa
+ > mpiexec ‚Äìn P program.exe ML A.dfa B.dfa C.dfa
 
 P-> Number of processors
 ML->Maximum length for input strings
 
 Output File Format( follows a lexicographic order):
   B                                              
-a  A B      // meaning that input ìaî is accepted by A and B dfas.                                     
+a  A B      // meaning that input ‚Äúa‚Äù is accepted by A and B dfas.                                     
 aa  B                                            
 aaa  B                                           
 aab  A B                                         
 ab  A B                                          
-aba  BÖ    
+aba  B‚Ä¶    
 
 Restrictions:
 1.	The processor number must be between 5 and 20.
-2.	The number of files containing dfaís must be between 3 and 10.
+2.	The number of files containing dfa‚Äôs must be between 3 and 10.
      
 
 ?	Description of My Program
@@ -48,19 +47,19 @@ I wrote my program in C language.  I used the following header files:
 <stdlib.h>
 
  I used 2 functions for this project.  My functions are :
-?	MAIN
+	MAIN
 
  This function takes command line inputs. First thing it does is creating as many processors as wanted. Then it checks whether the number of processors are between 5 and 20 . The second control it does is checking the number of dfas.  If one of those controls fail the program prints an error message and ends. 
   If there is no problem with inputs, program converts command line inputs into predefined variables. This job is done by processor#1. Then this processor sends this information to processor #2 which does the file reading.
-  Processor#2 reads the dfa file line by line. It stores the information of each dfa in in arrays( such as StartStates[] , Transition[][][] Ö).  After reading all dfa files, it uses broadcast function of MPI to send the information of dfa files to all processors. It broadcasts the NumberOfStates, AcceptStates, CurrentStates, Transition functions,   FileName of each dfa. 
+  Processor#2 reads the dfa file line by line. It stores the information of each dfa in in arrays( such as StartStates[] , Transition[][][] ‚Ä¶).  After reading all dfa files, it uses broadcast function of MPI to send the information of dfa files to all processors. It broadcasts the NumberOfStates, AcceptStates, CurrentStates, Transition functions,   FileName of each dfa. 
    Then each processor calls InputGenerator function. After that mpi finalizes and program ends. 
 
-?	INPUTGENERATOR
+	INPUTGENERATOR
 
- This function creates input in a lexicographical order in a recursive way. The logic of this function is that it starts with empty string and checks if it is accepted by any of the dfas.  Then it creates two new strings(by adding ëaë and ëbí to end of the old string. It calls the input generator by these 2 new strings. As it keeps the last position of the old string, the position of the new string is found by only one transition function. 
- This function uses processor#0 for output string creation. For each string one output string is created. Processor#0 creates a string of length 50 character. It fills the beginning of the string with input name.  Rest is filled by ë ë character.  It sends the output string to processor #3 which does the input string creation and dfa check.
+ This function creates input in a lexicographical order in a recursive way. The logic of this function is that it starts with empty string and checks if it is accepted by any of the dfas.  Then it creates two new strings(by adding ‚Äòa‚Äò and ‚Äòb‚Äô to end of the old string. It calls the input generator by these 2 new strings. As it keeps the last position of the old string, the position of the new string is found by only one transition function. 
+ This function uses processor#0 for output string creation. For each string one output string is created. Processor#0 creates a string of length 50 character. It fills the beginning of the string with input name.  Rest is filled by ‚Äò ‚Äò character.  It sends the output string to processor #3 which does the input string creation and dfa check.
 Processor#3 initially checks the last character of the input string and updates its current states for each dfa by using the transition function. Then it checks whether the current state of the string is an accept state of dfa or not. If it is an accept state it adds the name of the dfa to the output string. It does this operation for each dfa. After it ends additions to ouput string. It prints the output string to the output file(output.dat).
- Then processor#3 makes recursive calls of inputgenerator. It does this step only if the current input is smaller than MAX_LENGTH. If it is, processor #3 calls inputgenerator with updated inputs (oldinput + ëaí and oldinput+íbí).
+ Then processor#3 makes recursive calls of inputgenerator. It does this step only if the current input is smaller than MAX_LENGTH. If it is, processor #3 calls inputgenerator with updated inputs (oldinput + ‚Äòa‚Äô and oldinput+‚Äôb‚Äô).
 
 NOTES:
 
